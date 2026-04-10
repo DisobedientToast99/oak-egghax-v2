@@ -303,6 +303,7 @@ local function selectEgg(eggs)
 end
 
 local function skipEgg(egg)
+	if not egg then return end
 	_skipEggs[egg] = os.clock()
 	if _existingEsps[egg] then
 		_existingEsps[egg]:Destroy()
