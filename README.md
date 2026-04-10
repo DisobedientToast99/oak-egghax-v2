@@ -9,6 +9,8 @@ _G.Egg = {
 	sellSpotTeleportKeybind = Enum.KeyCode.G,
 	pauseKeybind = Enum.KeyCode.J,
 
+	autoServerHop = true,
+	
 	autoSkip = false,
 	autoSkipAfter = 10,
 	sustainSkippedEgg = 20,
