@@ -270,13 +270,13 @@ end
 
 local function gotoEgg(egg)
 	egg = egg or _currentEgg
-	
+
 	_character:MoveTo(_currentEgg:GetPivot().Position +
 		((Vector3.new(0, _character:GetExtentsSize().Y/2, 0)) +
 			(Vector3.new(0, _currentEgg:GetExtentsSize().Y/2, 0))) +
 		config.teleportOffset
 	)
-	
+
 	_lastTeleportTime = os.clock()
 end
 
@@ -340,17 +340,17 @@ local function _loadConnections()
 			_paused = false
 
 			_currentEgg,_currentEggSelectedTime = nil,0
-			
+
 			if not _currentEgg then
 				repeat task.wait() until _currentEgg
 			end
-			
+
 			gotoEgg()
 		elseif input.KeyCode == config.skipCurrentEggKeybind then
 			skipEgg(_currentEgg)
-			
+
 			_currentEgg,_currentEggSelectedTime = nil,0
-			
+
 			if not _currentEgg then
 				repeat task.wait() until _currentEgg
 			end
@@ -377,9 +377,15 @@ local function espFrame(eggs)
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
 			if _existingEsps[egg] then 
+				if config.showDistance and _character then
+					_existingEsps[egg].Label.Text = string.format(_espDistanceFormat, _existingEsps[egg]:GetAttribute("Name"), string.format("%.1f",(_character.PrimaryPart.Position - _existingEsps[egg].Adornee.Position).Magnitude))
+				else
+					_existingEsps[egg].Label.Text = string.format(_espNoDistanceFormat, _existingEsps[egg]:GetAttribute("Name"))
+				end
+				
 				continue
 			end
-			
+
 			local esp = makeEsp(egg)
 
 			if esp then
@@ -410,7 +416,7 @@ local function gotoFrame(eggs)
 
 	if (_currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder)) then
 		if ct-_lastTeleportTime >= config.teleportDelay then
-			
+
 			if config.autoTeleport then
 				gotoEgg(_currentEgg) 
 			end
