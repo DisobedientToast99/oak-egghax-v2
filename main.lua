@@ -398,10 +398,10 @@ local function espFrame(eggs)
 end
 
 local function gotoFrame(eggs)
-	if _paused then 
-		selectEgg(eggs)
-		return
-	end
+	-- if _paused then 
+	-- 	selectEgg(eggs)
+	-- 	return
+	-- end
 
 	local ct = os.clock()
 
