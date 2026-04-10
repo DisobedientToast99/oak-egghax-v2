@@ -5,10 +5,11 @@ local _defaults, config = {
 	serverHopKeybind = Enum.KeyCode.P,
 	sellSpotTeleportKeybind = Enum.KeyCode.G,
 	pauseKeybind = Enum.KeyCode.J,
+	skipCurrentEggKeybind = Enum.KeyCode.K,
 
-	autoServerHop = true,
+	autoServerHop = false,
 
-	autoSkip = false,
+	autoSkip = true,
 	autoSkipAfter = 10,
 	sustainSkippedEgg = 20,
 
@@ -26,7 +27,7 @@ local _defaults, config = {
 	showDistance = true,
 	showRarityColor = true,
 
-	teleport = true,
+	autoTeleport = false,
 	teleportDelay = 2,
 	teleportOffset = Vector3.new(0, 0, 0),
 }, table.clone(_G.Egg or {})
@@ -275,6 +276,8 @@ local function gotoEgg(egg)
 			(Vector3.new(0, _currentEgg:GetExtentsSize().Y/2, 0))) +
 		config.teleportOffset
 	)
+	
+	_lastTeleportTime = os.clock()
 end
 
 local function selectEgg(eggs)
@@ -297,6 +300,13 @@ local function selectEgg(eggs)
 
 	_currentEgg = allEggs[1]
 	_currentEggSelectedTime = os.clock()
+end
+
+local function skipEgg(egg)
+	_skipEggs[egg] = os.clock()
+	if _existingEsps[egg] then
+		_existingEsps[egg]:Destroy()
+	end
 end
 
 --------------------------------------------------------------------------------------
@@ -329,17 +339,22 @@ local function _loadConnections()
 		if input.KeyCode == config.nextEggKeybind then
 			_paused = false
 
-			--if _currentEgg then
-			--	_skipEggs[_currentEgg] = os.clock()
-			--end
-			
-			_lastTeleportTime = 0
 			_currentEgg,_currentEggSelectedTime = nil,0
 			
 			if not _currentEgg then
 				repeat task.wait() until _currentEgg
 			end
 			
+			gotoEgg()
+		elseif input.KeyCode == config.skipCurrentEggKeybind then
+			skipEgg(_currentEgg)
+			
+			_currentEgg,_currentEggSelectedTime = nil,0
+			
+			if not _currentEgg then
+				repeat task.wait() until _currentEgg
+			end
+
 			gotoEgg()
 		elseif input.KeyCode == config.sellSpotTeleportKeybind then
 			_paused = true
@@ -361,8 +376,10 @@ local function espFrame(eggs)
 
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
-			if _existingEsps[egg] then continue end
-
+			if _existingEsps[egg] then 
+				continue
+			end
+			
 			local esp = makeEsp(egg)
 
 			if esp then
@@ -375,7 +392,10 @@ local function espFrame(eggs)
 end
 
 local function gotoFrame(eggs)
-	if _paused then return end
+	if _paused then 
+		selectEgg(eggs)
+		return
+	end
 
 	local ct = os.clock()
 
@@ -383,16 +403,17 @@ local function gotoFrame(eggs)
 		if _currentEgg and (ct - _currentEggSelectedTime) > config.autoSkipAfter then
 			_lastTeleportTime = 0
 
-			_skipEggs[_currentEgg] = ct
+			skipEgg(_currentEgg)
 			_currentEgg,_currentEggSelectedTime = nil
 		end
 	end
 
 	if (_currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder)) then
-		if config.teleport and ct-_lastTeleportTime >= config.teleportDelay then
-			gotoEgg(_currentEgg)
-
-			_lastTeleportTime = ct
+		if ct-_lastTeleportTime >= config.teleportDelay then
+			
+			if config.autoTeleport then
+				gotoEgg(_currentEgg) 
+			end
 		end
 	else
 		selectEgg(eggs)
@@ -404,6 +425,7 @@ local function cleanFrame()
 
 	for egg,t in pairs(_skipEggs) do
 		if ct-t <= config.sustainSkippedEgg then continue end
+		makeEsp(egg)
 		_skipEggs[egg] = nil
 	end
 
