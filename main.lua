@@ -172,13 +172,13 @@ local function isEgg(egg: Instance)
 	local valid = true
 	
 	if not _validEggs[egg.Name] then
-		valid = false
+		return false
 	end
 
 	if _skipEggs[egg] then
-		valid = false
+		return false
 	end
-	
+
 	if (_validEggs[egg.Name][1] < config.minPoints) or (_validEggs[egg.Name][1] > config.maxPoints) then 
 		valid = false
 	end
