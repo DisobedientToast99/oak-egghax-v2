@@ -6,6 +6,8 @@ local _defaults, config = {
 	sellSpotTeleportKeybind = Enum.KeyCode.G,
 	pauseKeybind = Enum.KeyCode.J,
 
+	autoServerHop = true,
+	
 	autoSkip = false,
 	autoSkipAfter = 10,
 	sustainSkippedEgg = 20,
@@ -45,7 +47,7 @@ local players = game:GetService("Players")
 --------------------------------------------------------------------------------------
 
 local _player = players.LocalPlayer
-local _looseItemsFolder = workspace.World.LooseItems
+local _searchFolder, _selector = workspace:WaitForChild("World"), ">> Model"
 
 local _character = _player.Character or _player.CharacterAdded:Wait()
 
@@ -67,7 +69,7 @@ _label.BorderSizePixel = 0
 _label.Size = UDim2.new(1,0,1,0)
 _label.FontFace = Font.fromName("Inconsolata", Enum.FontWeight.Bold)
 _label.TextColor3 = Color3.new(1,1,1)
-_label.TextTransparency = 0.2
+_label.TextTransparency = 0
 _label.TextScaled = true
 
 local _existingEsps = {}
@@ -174,7 +176,7 @@ local function isEgg(egg: Instance)
 		return false
 	end
 
-	if egg:FindFirstChild("Owner", true) then
+	if (not egg:FindFirstChild("Owner")) or egg:FindFirstChild("Owner").Value then
 		return false
 	end
 
@@ -200,7 +202,7 @@ local function isEgg(egg: Instance)
 end
 
 local function getEggs(): ({Total: number, Lists: {[string]: {Instance}}})
-	local items = _looseItemsFolder:QueryDescendants("> Model")
+	local items = _searchFolder:QueryDescendants(_selector)
 	local found = {Total=0,Lists={}}
 
 	for _,item in pairs(items) do
@@ -345,7 +347,7 @@ local function gotoFrame(eggs)
 		end
 	end
 
-	if _currentEgg and _currentEgg.Parent and _currentEgg.Parent == _looseItemsFolder then
+	if _currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder) then
 		if ct-_lastTeleportTime >= config.teleportDelay then
 			_character:MoveTo(_currentEgg:GetPivot().Position +
 				((Vector3.new(0, _character:GetExtentsSize().Y/2, 0)) +
@@ -403,6 +405,11 @@ while task.wait() do
 	local eggs = getEggs()
 	_character = _player.Character
 
+	if eggs.Total == 0 and config.autoServerHop then
+		serverHop()
+		break
+	end
+	
 	gotoFrame(eggs)
 	espFrame(eggs)
 	cleanFrame()
