@@ -175,6 +175,10 @@ local function isEgg(egg: Instance)
 		return false
 	end
 
+	if egg:FindFirstChild("Owner") then
+		return false
+	end
+	
 	if _skipEggs[egg] then
 		return false
 	end
