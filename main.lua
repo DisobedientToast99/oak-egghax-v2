@@ -173,7 +173,7 @@ local function isEgg(egg: Instance)
 	if not _validEggs[egg.Name] then
 		return false
 	end
-	
+
 	if egg:FindFirstChild("Owner", true) then
 		return false
 	end
@@ -295,12 +295,11 @@ local function _loadConnections()
 		if input.KeyCode == config.nextEggKeybind then
 			_paused = false
 
+			if _currentEgg then
+				_skipEggs[_currentEgg] = os.clock()
+			end
 			_lastTeleportTime = 0
-			_skipEggs[_currentEgg] = os.clock()
-			_currentEgg,_currentEggSelectedTime = nil
-
-			_currentEgg = nil
-			_currentEggSelectedTime = 0
+			_currentEgg,_currentEggSelectedTime = nil,0
 		elseif input.KeyCode == config.sellSpotTeleportKeybind then
 			_paused = true
 			_character:MoveTo(Vector3.new(390, 75, -40))
