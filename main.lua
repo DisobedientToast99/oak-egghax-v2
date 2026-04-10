@@ -7,7 +7,7 @@ local _defaults, config = {
 	pauseKeybind = Enum.KeyCode.J,
 
 	autoServerHop = true,
-	
+
 	autoSkip = false,
 	autoSkipAfter = 10,
 	sustainSkippedEgg = 20,
@@ -222,7 +222,7 @@ end
 local function makeEsp(egg)
 	if not _validEggs[egg.Name] then return false end
 
-	local newEsp = _esp:Clone() table.insert(_existingEsps, newEsp)
+	local newEsp = _esp:Clone() _existingEsps[egg] = newEsp
 	local newLabel = _label:Clone() newLabel.Parent = newEsp
 
 	newEsp.Adornee = egg.PrimaryPart or egg:FindFirstChildOfClass("BasePart")
@@ -243,9 +243,9 @@ local function makeEsp(egg)
 end
 
 local function updateEsps()
-	for i,esp in pairs(_existingEsps) do
-		if not esp then
-			table.remove(_existingEsps, i)
+	for egg,esp in pairs(_existingEsps) do
+		if not (egg and esp) then
+			_existingEsps[egg] = nil
 			continue
 		end
 
@@ -258,13 +258,13 @@ local function updateEsps()
 end
 
 local function clearEsps()
-	for i,esp in pairs(_existingEsps) do
+	for egg,esp in pairs(_existingEsps) do
 		if not esp then continue end
 
 		esp:Destroy()
 	end
 
-	table.clear(_existingEsps)
+	_existingEsps = {}
 end
 
 --------------------------------------------------------------------------------------
@@ -316,16 +316,18 @@ end
 --------------------------------------------------------------------------------------
 
 local function espFrame(eggs)
-	if not config.espEnabled then if #_existingEsps>0 then clearEsps() end return end
+	if not config.espEnabled then clearEsps() return end
 
-	clearEsps()
+	--clearEsps()
 
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
+			if _existingEsps[egg] then continue end
+			
 			local esp = makeEsp(egg)
 
 			if esp then
-				esp.Parent = _player.PlayerGui
+				esp.Parent = egg--_player.PlayerGui
 			end
 
 			esp = nil
@@ -334,7 +336,7 @@ local function espFrame(eggs)
 end
 
 local function gotoFrame(eggs)
-	if not config.teleport or _paused then return end
+	if _paused then return end
 
 	local ct = os.clock()
 
@@ -348,7 +350,7 @@ local function gotoFrame(eggs)
 	end
 
 	if _currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder) then
-		if ct-_lastTeleportTime >= config.teleportDelay then
+		if config.teleport and ct-_lastTeleportTime >= config.teleportDelay then
 			_character:MoveTo(_currentEgg:GetPivot().Position +
 				((Vector3.new(0, _character:GetExtentsSize().Y/2, 0)) +
 					(Vector3.new(0, _currentEgg:GetExtentsSize().Y/2, 0))) +
@@ -409,7 +411,7 @@ while task.wait() do
 		serverHop()
 		break
 	end
-	
+
 	gotoFrame(eggs)
 	espFrame(eggs)
 	cleanFrame()
