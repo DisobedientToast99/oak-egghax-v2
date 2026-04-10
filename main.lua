@@ -1,11 +1,10 @@
-if game.PlaceId ~= 9938675423 then return end
-
 local _defaults, config = {
 	enabled = true,
 
 	nextEggKeybind = Enum.KeyCode.H,
-	serverHop = Enum.KeyCode.P,
-	sellSpotTeleport = Enum.KeyCode.G,
+	serverHopKeybind = Enum.KeyCode.P,
+	sellSpotTeleportKeybind = Enum.KeyCode.G,
+	pauseKeybind = Enum.KeyCode.J,
 
 	autoSkip = false,
 	autoSkipAfter = 10,
@@ -302,11 +301,13 @@ local function _loadConnections()
 
 			_currentEgg = nil
 			_currentEggSelectedTime = 0
-		elseif input.KeyCode == config.sellSpotTeleport then
+		elseif input.KeyCode == config.sellSpotTeleportKeybind then
 			_paused = true
 			_character:MoveTo(Vector3.new(390, 75, -40))
-		elseif input.KeyCode == config.serverHop then
+		elseif input.KeyCode == config.serverHopKeybind then
 			serverHop()
+		elseif input.KeyCode == config.pauseKeybind then
+			_paused = not _paused
 		end
 	end))
 end
