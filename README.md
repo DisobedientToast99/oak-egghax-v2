@@ -5,8 +5,9 @@ _G.Egg = {
 	enabled = true,
 
 	nextEggKeybind = Enum.KeyCode.H,
-	serverHop = Enum.KeyCode.P,
-	sellSpotTeleport = Enum.KeyCode.G,
+	serverHopKeybind = Enum.KeyCode.P,
+	sellSpotTeleportKeybind = Enum.KeyCode.G,
+	pauseKeybind = Enum.KeyCode.J,
 
 	autoSkip = false,
 	autoSkipAfter = 10,
@@ -16,18 +17,18 @@ _G.Egg = {
 	maxPoints = math.huge,
 
 	minRarity = 0,
-	maxRarity = 2,
+	maxRarity = 4,
 
-	filterEggs = {"GurtEgg"},
-	isBlacklist = false,
-	blockOthersIfWhitelist = false,
+	filterEggs = {},
+	isBlacklist = true,
+	blockOthersIfWhitelist = true,
 
 	espEnabled = true,
 	showDistance = true,
 	showRarityColor = true,
 
 	teleport = true,
-	teleportDelay = 1,
+	teleportDelay = 2,
 	teleportOffset = Vector3.new(0, 0, 0),
 }
 
