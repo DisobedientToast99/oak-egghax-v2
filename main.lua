@@ -377,10 +377,12 @@ local function espFrame(eggs)
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
 			if _existingEsps[egg] then 
-				if config.showDistance and _character then
-					_existingEsps[egg].Label.Text = string.format(_espDistanceFormat, _existingEsps[egg]:GetAttribute("Name"), string.format("%.1f",(_character.PrimaryPart.Position - _existingEsps[egg].Adornee.Position).Magnitude))
-				else
-					_existingEsps[egg].Label.Text = string.format(_espNoDistanceFormat, _existingEsps[egg]:GetAttribute("Name"))
+				if _existingEsps[egg].Label then
+					if config.showDistance and _character then
+						_existingEsps[egg].Label.Text = string.format(_espDistanceFormat, _existingEsps[egg]:GetAttribute("Name"), string.format("%.1f",(_character.PrimaryPart.Position - _existingEsps[egg].Adornee.Position).Magnitude))
+					else
+						_existingEsps[egg].Label.Text = string.format(_espNoDistanceFormat, _existingEsps[egg]:GetAttribute("Name"))
+					end
 				end
 				
 				continue
@@ -398,10 +400,10 @@ local function espFrame(eggs)
 end
 
 local function gotoFrame(eggs)
-	-- if _paused then 
-	-- 	selectEgg(eggs)
-	-- 	return
-	-- end
+	--if _paused then 
+	--	selectEgg(eggs)
+	--	return
+	--end
 
 	local ct = os.clock()
 
