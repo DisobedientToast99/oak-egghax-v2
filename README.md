@@ -8,10 +8,11 @@ _G.Egg = {
 	serverHopKeybind = Enum.KeyCode.P,
 	sellSpotTeleportKeybind = Enum.KeyCode.G,
 	pauseKeybind = Enum.KeyCode.J,
+	skipCurrentEggKeybind = Enum.KeyCode.K,
 
-	autoServerHop = true,
-	
-	autoSkip = false,
+	autoServerHop = false,
+
+	autoSkip = true,
 	autoSkipAfter = 10,
 	sustainSkippedEgg = 20,
 
@@ -29,7 +30,7 @@ _G.Egg = {
 	showDistance = true,
 	showRarityColor = true,
 
-	teleport = true,
+	autoTeleport = false,
 	teleportDelay = 2,
 	teleportOffset = Vector3.new(0, 0, 0),
 }
