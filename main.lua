@@ -303,7 +303,6 @@ local function selectEgg(eggs)
 end
 
 local function skipEgg(egg)
-	if not egg then return end
 	_skipEggs[egg] = os.clock()
 	if _existingEsps[egg] then
 		_existingEsps[egg]:Destroy()
@@ -377,15 +376,17 @@ local function espFrame(eggs)
 
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
+			if not egg then continue end
+			
 			if _existingEsps[egg] then 
-				if _existingEsps[egg].Label then
+				if _existingEsps[egg]:FindFirstChild("Label") then
 					if config.showDistance and _character then
 						_existingEsps[egg].Label.Text = string.format(_espDistanceFormat, _existingEsps[egg]:GetAttribute("Name"), string.format("%.1f",(_character.PrimaryPart.Position - _existingEsps[egg].Adornee.Position).Magnitude))
 					else
 						_existingEsps[egg].Label.Text = string.format(_espNoDistanceFormat, _existingEsps[egg]:GetAttribute("Name"))
 					end
 				end
-				
+
 				continue
 			end
 
