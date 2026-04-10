@@ -267,6 +267,38 @@ local function clearEsps()
 	_existingEsps = {}
 end
 
+local function gotoEgg(egg)
+	egg = egg or _currentEgg
+	
+	_character:MoveTo(_currentEgg:GetPivot().Position +
+		((Vector3.new(0, _character:GetExtentsSize().Y/2, 0)) +
+			(Vector3.new(0, _currentEgg:GetExtentsSize().Y/2, 0))) +
+		config.teleportOffset
+	)
+end
+
+local function selectEgg(eggs)
+	_lastTeleportTime = 0
+
+	local allEggs = {}
+
+	for _,list in pairs(eggs.Lists) do
+		table.move(
+			list, 1,
+			#list,
+			#allEggs+1,
+			allEggs
+		)
+	end
+
+	table.sort(allEggs, function(a,b)
+		return _validEggs[a.Name][1] > _validEggs[b.Name][1]
+	end)
+
+	_currentEgg = allEggs[1]
+	_currentEggSelectedTime = os.clock()
+end
+
 --------------------------------------------------------------------------------------
 
 local function _load()
@@ -297,11 +329,18 @@ local function _loadConnections()
 		if input.KeyCode == config.nextEggKeybind then
 			_paused = false
 
-			if _currentEgg then
-				_skipEggs[_currentEgg] = os.clock()
-			end
+			--if _currentEgg then
+			--	_skipEggs[_currentEgg] = os.clock()
+			--end
+			
 			_lastTeleportTime = 0
 			_currentEgg,_currentEggSelectedTime = nil,0
+			
+			if not _currentEgg then
+				repeat task.wait() until _currentEgg
+			end
+			
+			gotoEgg()
 		elseif input.KeyCode == config.sellSpotTeleportKeybind then
 			_paused = true
 			_character:MoveTo(Vector3.new(390, 75, -40))
@@ -323,7 +362,7 @@ local function espFrame(eggs)
 	for name,list in pairs(eggs.Lists) do
 		for i,egg in pairs(list) do
 			if _existingEsps[egg] then continue end
-			
+
 			local esp = makeEsp(egg)
 
 			if esp then
@@ -349,36 +388,14 @@ local function gotoFrame(eggs)
 		end
 	end
 
-	if _currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder) then
+	if (_currentEgg and _currentEgg.Parent and _currentEgg:IsDescendantOf(_searchFolder)) then
 		if config.teleport and ct-_lastTeleportTime >= config.teleportDelay then
-			_character:MoveTo(_currentEgg:GetPivot().Position +
-				((Vector3.new(0, _character:GetExtentsSize().Y/2, 0)) +
-					(Vector3.new(0, _currentEgg:GetExtentsSize().Y/2, 0))) +
-				config.teleportOffset
-			)
+			gotoEgg(_currentEgg)
 
 			_lastTeleportTime = ct
 		end
 	else
-		_lastTeleportTime = 0
-
-		local allEggs = {}
-
-		for _,list in pairs(eggs.Lists) do
-			table.move(
-				list, 1,
-				#list,
-				#allEggs+1,
-				allEggs
-			)
-		end
-
-		table.sort(allEggs, function(a,b)
-			return _validEggs[a.Name][1] > _validEggs[b.Name][1]
-		end)
-
-		_currentEgg = allEggs[1]
-		_currentEggSelectedTime = os.clock()
+		selectEgg(eggs)
 	end
 end
 
