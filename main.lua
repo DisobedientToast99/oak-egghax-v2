@@ -48,7 +48,7 @@ local players = game:GetService("Players")
 --------------------------------------------------------------------------------------
 
 local _player = players.LocalPlayer
-local _searchFolder, _selector = workspace:WaitForChild("World"), ">> Model"
+local _searchFolder, _selector = workspace:WaitForChild("World"):WaitForChild("VariantRegions"), ">> Model"
 
 local _character = _player.Character or _player.CharacterAdded:Wait()
 
