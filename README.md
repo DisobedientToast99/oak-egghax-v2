@@ -1,7 +1,7 @@
 # oak-egghax-v2
 
 ```lua
-_G._Egg = {
+_G.Egg = {
 	enabled = true,
 
 	nextEggKeybind = Enum.KeyCode.H,
