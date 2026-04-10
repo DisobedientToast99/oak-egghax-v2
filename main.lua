@@ -274,7 +274,7 @@ local function _load()
 		config = _defaults
 	else
 		for i,v in pairs(_defaults) do
-			if not _G.Egg[i] then
+			if _G.Egg[i] == nil then
 				config[i] = v
 			elseif typeof(_G.Egg[i]) ~= typeof(v) then
 				warn(`['_G.Egg.{i}'] is an invalid type, expected '{typeof(v)}', got '{typeof(_G.Egg[i])}', replacing with default: [{v}]`)
