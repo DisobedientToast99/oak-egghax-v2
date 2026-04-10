@@ -170,15 +170,15 @@ end
 
 local function isEgg(egg: Instance)
 	local valid = true
-	
+
 	if not _validEggs[egg.Name] then
 		return false
 	end
-
-	if egg:FindFirstChild("Owner") then
+	
+	if egg:FindFirstChild("Owner", true) then
 		return false
 	end
-	
+
 	if _skipEggs[egg] then
 		return false
 	end
@@ -190,13 +190,13 @@ local function isEgg(egg: Instance)
 	if (_validEggs[egg.Name][2] < config.minRarity) or (_validEggs[egg.Name][2] > config.maxRarity) then 
 		valid = false
 	end
-	
+
 	if config.isBlacklist == true and table.find(config.filterEggs, egg.Name) then
 		valid = false
 	elseif (config.isBlacklist == false and not table.find(config.filterEggs, egg.Name)) and config.blockOthersIfWhitelist then
 		valid = false
 	end
-	
+
 	return valid or (config.isBlacklist == false and table.find(config.filterEggs, egg.Name))
 end
 
@@ -370,7 +370,7 @@ local function gotoFrame(eggs)
 		end
 
 		table.sort(allEggs, function(a,b)
-			return _validEggs[a.Name][2] > _validEggs[b.Name][2]
+			return _validEggs[a.Name][1] > _validEggs[b.Name][1]
 		end)
 
 		_currentEgg = allEggs[1]
